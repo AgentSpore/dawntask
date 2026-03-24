@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#0a0a12"/>
+  <circle cx="96" cy="80" r="28" fill="none" stroke="#f5a623" stroke-width="4"/>
+  <path d="M96 52v-10M96 118v-10M68 80H58M134 80H124M74.3 58.3l-7-7M124.7 58.3l7-7M74.3 101.7l-7 7M124.7 101.7l7 7" stroke="#f5a623" stroke-width="4" stroke-linecap="round"/>
+  <text x="96" y="156" text-anchor="middle" fill="#e8e4dc" font-family="Georgia" font-size="22" font-weight="600">DawnTask</text>
+</svg>

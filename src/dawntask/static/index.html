@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>DawnTask</title>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#1a1035">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Night — default neutral (set by JS based on palette) */
+  --n-bg: #161622;
+  --n-surface: #1e1e30;
+  --n-surface2: #28283e;
+  --n-accent: #a78bfa;
+  --n-accent2: #60a5fa;
+  --n-accent-glow: rgba(167, 139, 250, 0.18);
+  --n-text: #e8e6f0;
+  --n-text2: #8b89a0;
+  --n-border: rgba(167, 139, 250, 0.1);
+  --n-shadow: 6px 6px 16px rgba(5, 5, 15, 0.6), -4px -4px 12px rgba(50, 50, 80, 0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+  --n-shadow-inset: inset 3px 3px 8px rgba(5, 5, 15, 0.5), inset -2px -2px 6px rgba(50, 50, 80, 0.1);
+  --n-btn-shadow: 5px 5px 14px rgba(5, 5, 15, 0.5), -3px -3px 10px rgba(50, 50, 80, 0.15);
+  --n-btn-active: inset 3px 3px 8px rgba(5, 5, 15, 0.5), inset -2px -2px 4px rgba(50,50,80,0.1);
+
+  /* Morning — default neutral (set by JS based on palette) */
+  --m-bg: #f3f2ef;
+  --m-surface: #fafaf8;
+  --m-surface2: #edecea;
+  --m-accent: #6366f1;
+  --m-accent2: #f59e0b;
+  --m-accent-glow: rgba(99, 102, 241, 0.12);
+  --m-text: #2d2d3a;
+  --m-text2: #8888a0;
+  --m-border: rgba(99, 102, 241, 0.1);
+  --m-shadow: 6px 6px 16px rgba(180, 178, 170, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8), inset 0 1px 0 rgba(255,255,255,0.5);
+  --m-shadow-inset: inset 3px 3px 8px rgba(180, 178, 170, 0.22), inset -2px -2px 6px rgba(255,255,255,0.6);
+  --m-btn-shadow: 5px 5px 14px rgba(180, 178, 170, 0.3), -3px -3px 10px rgba(255,255,255,0.7);
+  --m-btn-active: inset 3px 3px 8px rgba(180, 178, 170, 0.3), inset -2px -2px 4px rgba(255,255,255,0.5);
+
+  --bg: var(--n-bg);
+  --surface: var(--n-surface);
+  --surface2: var(--n-surface2);
+  --accent: var(--n-accent);
+  --accent2: var(--n-accent2);
+  --accent-glow: var(--n-accent-glow);
+  --text: var(--n-text);
+  --text2: var(--n-text2);
+  --border: var(--n-border);
+  --shadow: var(--n-shadow);
+  --shadow-inset: var(--n-shadow-inset);
+  --btn-shadow: var(--n-btn-shadow);
+  --btn-active: var(--n-btn-active);
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --radius: 24px;
+  --radius-sm: 18px;
+  --radius-xs: 12px;
+  --transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  font-weight: 600;
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--transition), color var(--transition);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Dreamy ambient blobs */
+.night-glow {
+  position: fixed;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
+  pointer-events: none;
+  transition: opacity var(--transition);
+  z-index: 0;
+  filter: blur(40px);
+}
+
+/* ===== HEADER ===== */
+.header {
+  padding: 16px 20px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  position: relative;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px var(--accent-glow));
+}
+
+.time-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: var(--shadow);
+}
+
+.header-actions { display: flex; gap: 8px; }
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: none;
+  background: var(--surface);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--btn-shadow);
+}
+
+.icon-btn:hover { color: var(--accent); transform: translateY(-2px); }
+.icon-btn:active { box-shadow: var(--btn-active); transform: translateY(1px); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* ===== SCREENS ===== */
+.screens { flex: 1; position: relative; overflow: hidden; }
+
+.screen {
+  position: absolute;
+  inset: 0;
+  padding: 8px 18px 20px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.screen::-webkit-scrollbar { display: none; }
+
+/* ===== CAPTURE ===== */
+.capture-greeting {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.capture-sub {
+  font-size: 14px;
+  color: var(--text2);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.thought-input-wrap { position: relative; margin-bottom: 14px; }
+
+.thought-input {
+  width: 100%;
+  min-height: 110px;
+  padding: 18px;
+  padding-right: 64px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  resize: none;
+  outline: none;
+  box-shadow: var(--shadow-inset);
+  transition: box-shadow 0.3s;
+}
+
+.thought-input::placeholder { color: var(--text2); opacity: 0.5; }
+.thought-input:focus {
+  box-shadow: var(--shadow-inset), 0 0 0 3px var(--accent-glow);
+}
+
+.voice-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 16px var(--accent-glow), var(--btn-shadow);
+}
+
+.voice-btn:hover { transform: scale(1.12); }
+.voice-btn:active { transform: scale(0.95); box-shadow: var(--btn-active); }
+
+.voice-btn.recording {
+  animation: orb-pulse 1.5s infinite;
+  background: linear-gradient(135deg, #ff6b8a, #ff3366);
+}
+
+@keyframes orb-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.5), 0 4px 16px var(--accent-glow); transform: scale(1); }
+  50% { box-shadow: 0 0 0 16px rgba(255, 51, 102, 0), 0 4px 24px var(--accent-glow); transform: scale(1.05); }
+}
+
+.voice-btn svg { width: 22px; height: 22px; }
+
+.add-thought-btn {
+  width: 100%;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--surface);
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 16px;
+  box-shadow: var(--btn-shadow);
+}
+
+.add-thought-btn:hover { transform: translateY(-2px); background: var(--accent-glow); }
+.add-thought-btn:active { transform: translateY(1px); box-shadow: var(--btn-active); }
+
+.thoughts-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+.thought-card {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 1.5;
+  position: relative;
+  animation: clay-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--shadow);
+}
+
+@keyframes clay-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.thought-card .thought-time { font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; }
+
+.thought-card .thought-delete {
+  position: absolute; top: 10px; right: 10px;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; background: var(--surface2);
+  color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all 0.2s;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+.thought-card .thought-delete:hover { color: #ff6b8a; background: var(--accent-glow); }
+
+.sleep-btn {
+  width: 100%;
+  padding: 18px;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 6px 24px var(--accent-glow), var(--btn-shadow);
+  letter-spacing: 0.3px;
+}
+
+.sleep-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 32px var(--accent-glow), var(--btn-shadow); }
+.sleep-btn:active { transform: translateY(1px); box-shadow: var(--btn-active); }
+.sleep-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: var(--btn-shadow); }
+
+/* ===== MODEL PICKER ===== */
+.model-picker { margin-bottom: 14px; position: relative; }
+.model-picker-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.model-picker-btn {
+  width: 100%; padding: 10px 14px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  color: var(--text); background: var(--surface); border: none;
+  border-radius: var(--radius-xs); cursor: pointer;
+  text-align: left; display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+}
+
+.model-picker-btn:hover { transform: translateY(-1px); }
+
+.model-dropdown {
+  position: absolute; top: 100%; left: 0; right: 0;
+  max-height: 240px; overflow-y: auto;
+  background: var(--surface); border: none;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  z-index: 100; display: none;
+}
+
+.model-dropdown.open { display: block; animation: clay-pop 0.3s ease; }
+
+.model-search {
+  width: 100%; padding: 12px 14px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  color: var(--text); background: var(--surface2); border: none; outline: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.model-option {
+  padding: 10px 14px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.model-option:hover { background: var(--accent-glow); }
+.model-option.selected { color: var(--accent); font-weight: 700; }
+
+/* ===== PLAN ===== */
+.plan-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 300px; text-align: center; gap: 12px;
+}
+
+.plan-empty-icon { width: 72px; height: 72px; color: var(--text2); opacity: 0.25; }
+
+.plan-empty h3 { font-family: var(--font-display); font-size: 20px; font-weight: 400; opacity: 0.5; }
+.plan-empty p { font-size: 14px; color: var(--text2); font-weight: 500; }
+
+.letter-card {
+  padding: 24px 20px;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.letter-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 4px 4px 0 0;
+}
+
+.letter-label {
+  font-size: 11px; font-weight: 800; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px;
+}
+
+.letter-text {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 300; line-height: 1.65;
+  font-style: italic; opacity: 0.9;
+}
+
+.plan-progress { margin-bottom: 18px; }
+
+.plan-progress-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+
+.plan-progress-label { font-size: 13px; font-weight: 700; color: var(--text2); }
+.plan-progress-pct { font-size: 14px; font-weight: 800; color: var(--accent); }
+
+.plan-progress-bar {
+  height: 10px;
+  background: var(--surface);
+  border-radius: 10px;
+  box-shadow: var(--shadow-inset);
+  overflow: hidden;
+}
+
+.plan-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.plan-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+
+.plan-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px; background: var(--surface); border: none;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.plan-item:hover { transform: translateY(-2px); }
+.plan-item:active { transform: translateY(1px); box-shadow: var(--btn-active); }
+.plan-item.completed { opacity: 0.45; }
+.plan-item.completed .plan-item-text { text-decoration: line-through; }
+
+.plan-item-check {
+  width: 26px; height: 26px; min-width: 26px;
+  border-radius: 50%;
+  background: var(--surface2);
+  box-shadow: var(--shadow-inset);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-top: 1px;
+}
+
+.plan-item.completed .plan-item-check {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 2px 10px var(--accent-glow);
+  transform: scale(1.1);
+}
+
+.plan-item-check svg {
+  width: 14px; height: 14px; color: #fff;
+  opacity: 0; transform: scale(0) rotate(-45deg);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.plan-item.completed .plan-item-check svg {
+  opacity: 1; transform: scale(1) rotate(0);
+}
+
+.plan-item-body { flex: 1; }
+.plan-item-text { font-size: 14px; line-height: 1.4; margin-bottom: 6px; font-weight: 600; transition: all 0.3s; }
+
+.plan-item-meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text2); font-weight: 500; }
+
+.priority-dot { width: 8px; height: 8px; border-radius: 50%; }
+.priority-dot.high { background: #ff6b8a; box-shadow: 0 0 6px rgba(255,107,138,0.4); }
+.priority-dot.medium { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+.priority-dot.low { background: #6ee7b7; box-shadow: 0 0 6px rgba(110,231,183,0.4); }
+
+.plan-insights {
+  padding: 16px; background: var(--surface);
+  border: none; border-radius: var(--radius-sm);
+  margin-bottom: 14px; box-shadow: var(--shadow);
+}
+
+.plan-insights-title { font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+.plan-insights li { font-size: 13px; color: var(--text2); margin-bottom: 4px; list-style: none; padding-left: 18px; position: relative; font-weight: 500; }
+.plan-insights li::before { content: '✨'; position: absolute; left: 0; }
+
+.plan-model-badge { text-align: center; font-size: 11px; color: var(--text2); opacity: 0.4; font-weight: 500; margin-top: 8px; }
+
+/* ===== REVIEW ===== */
+.review-section { margin-bottom: 24px; }
+.section-title { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 18px; }
+
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+
+.stat-card {
+  padding: 18px; background: var(--surface); border: none;
+  border-radius: var(--radius-sm); text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.stat-value {
+  font-family: var(--font-display); font-size: 32px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1; margin-bottom: 4px;
+}
+
+.stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+
+.mood-selector {
+  display: flex; justify-content: center; gap: 10px;
+  padding: 18px; background: var(--surface); border: none;
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+.mood-btn {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: none; background: var(--surface2);
+  font-size: 26px; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--btn-shadow);
+}
+
+.mood-btn:hover { transform: scale(1.15) translateY(-2px); }
+.mood-btn:active { transform: scale(0.95); box-shadow: var(--btn-active); }
+
+.mood-btn.selected {
+  background: linear-gradient(135deg, var(--accent-glow), var(--accent-glow));
+  transform: scale(1.25) translateY(-4px);
+  box-shadow: 0 6px 20px var(--accent-glow), var(--btn-shadow);
+}
+
+.review-notes {
+  width: 100%; min-height: 80px; padding: 14px;
+  font-family: var(--font-body); font-size: 14px; font-weight: 500;
+  color: var(--text); background: var(--surface); border: none;
+  border-radius: var(--radius-sm); resize: none; outline: none;
+  box-shadow: var(--shadow-inset); margin-top: 14px;
+  transition: box-shadow 0.3s;
+}
+
+.review-notes:focus { box-shadow: var(--shadow-inset), 0 0 0 3px var(--accent-glow); }
+
+.save-review-btn {
+  width: 100%; padding: 16px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 800;
+  color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none; border-radius: var(--radius-sm); cursor: pointer;
+  margin-top: 14px; box-shadow: 0 4px 16px var(--accent-glow), var(--btn-shadow);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.save-review-btn:hover { transform: translateY(-2px); }
+.save-review-btn:active { transform: translateY(1px); box-shadow: var(--btn-active); }
+
+/* ===== HISTORY ===== */
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.calendar-month { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+.calendar-nav { display: flex; gap: 6px; }
+
+.calendar-nav button {
+  width: 36px; height: 36px; border-radius: 12px;
+  border: none; background: var(--surface); color: var(--text2);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--btn-shadow);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.calendar-nav button:hover { transform: translateY(-1px); color: var(--accent); }
+.calendar-nav button:active { transform: translateY(1px); box-shadow: var(--btn-active); }
+
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  margin-bottom: 20px;
+  padding: 16px; background: var(--surface);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+.calendar-day-label { text-align: center; font-size: 11px; font-weight: 800; color: var(--text2); padding: 6px 0; }
+
+.calendar-day {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-radius: 12px; font-size: 13px; font-weight: 600;
+  position: relative; cursor: pointer; transition: all 0.2s;
+}
+
+.calendar-day:hover { background: var(--accent-glow); }
+.calendar-day.today { color: var(--accent); font-weight: 800; background: var(--accent-glow); border-radius: 12px; }
+.calendar-day.empty { pointer-events: none; }
+
+.calendar-day .day-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 2px; }
+.calendar-day .day-dot.has-plan { background: var(--accent); }
+.calendar-day .day-dot.completed { background: #6ee7b7; }
+.calendar-day .day-dot.partial { background: var(--accent2); }
+
+.streak-card {
+  padding: 20px; background: var(--surface); border: none;
+  border-radius: var(--radius); display: flex; align-items: center;
+  gap: 16px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+
+.streak-flame { font-size: 40px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(255,107,0,0.3)); }
+.streak-info h4 { font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+.streak-info p { font-size: 13px; color: var(--text2); font-weight: 500; }
+
+.history-day-detail {
+  padding: 16px; background: var(--surface); border: none;
+  border-radius: var(--radius-sm); margin-bottom: 12px;
+  display: none; box-shadow: var(--shadow);
+}
+
+.history-day-detail.visible { display: block; animation: clay-pop 0.3s ease; }
+
+.data-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+.data-btn {
+  flex: 1; padding: 14px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 700;
+  border-radius: var(--radius-sm); border: none;
+  background: var(--surface); color: var(--text2);
+  cursor: pointer; box-shadow: var(--btn-shadow);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.data-btn:hover { transform: translateY(-2px); color: var(--accent); }
+.data-btn:active { transform: translateY(1px); box-shadow: var(--btn-active); }
+
+/* ===== TAB BAR ===== */
+.tab-bar {
+  display: flex;
+  padding: 8px 14px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  margin: 0 12px 8px;
+  background: var(--surface);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  z-index: 20;
+  transition: background var(--transition);
+}
+
+.tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; padding: 10px 4px;
+  background: transparent; border: none; border-radius: 16px;
+  color: var(--text2); cursor: pointer; font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab.active {
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.tab svg { width: 22px; height: 22px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.tab.active svg { transform: scale(1.15) translateY(-1px); }
+
+.tab-label { font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
+
+/* ===== BANNER ===== */
+.info-banner {
+  margin: 0 18px 10px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  animation: clay-pop 0.4s ease;
+  z-index: 10;
+  position: relative;
+  box-shadow: var(--shadow);
+  font-weight: 500;
+}
+
+.info-banner-icon { font-size: 20px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.info-banner-text { flex: 1; }
+.info-banner-text strong { color: var(--accent); font-weight: 700; }
+
+.info-banner-close {
+  width: 28px; height: 28px; border: none; border-radius: 50%;
+  background: var(--surface2); color: var(--text2);
+  cursor: pointer; font-size: 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+.info-banner-close:hover { color: #ff6b8a; }
+
+.info-banner .banner-export-btn {
+  display: inline-block; margin-top: 8px;
+  padding: 6px 14px; font-size: 12px; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 2px 8px var(--accent-glow);
+  transition: all 0.2s;
+}
+
+.info-banner .banner-export-btn:hover { transform: translateY(-1px); }
+
+/* ===== LOADING ===== */
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(8px);
+}
+
+.loading-overlay.visible { opacity: 1; pointer-events: auto; }
+
+.loading-spinner {
+  width: 52px; height: 52px;
+  border: 4px solid var(--surface);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  box-shadow: var(--shadow);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  margin-top: 18px; font-family: var(--font-display);
+  font-size: 16px; color: #fff; opacity: 0.9;
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(20px) scale(0.9);
+  padding: 14px 24px; background: var(--surface);
+  border: none; border-radius: 20px;
+  font-size: 14px; font-weight: 700;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2), var(--shadow);
+  z-index: 2000; opacity: 0;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 320px; text-align: center;
+}
+
+.toast.visible { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+.toast.error { color: #ff6b8a; }
+.toast.success { color: #6ee7b7; }
+
+/* ===== PALETTE PICKER ===== */
+.palette-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 18px;
+  margin: 0 18px 8px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+
+.palette-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--btn-shadow);
+  position: relative;
+}
+
+.palette-dot:hover { transform: scale(1.15); }
+.palette-dot:active { transform: scale(0.95); }
+
+.palette-dot.active {
+  border-color: var(--text);
+  transform: scale(1.1);
+}
+
+.palette-dot[data-palette="neutral"] {
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+}
+
+.palette-dot[data-palette="warm"] {
+  background: linear-gradient(135deg, #f472b6, #fb923c);
+}
+
+.palette-dot[data-palette="cool"] {
+  background: linear-gradient(135deg, #38bdf8, #34d399);
+}
+
+.palette-label {
+  font-size: 10px;
+  text-align: center;
+  color: var(--text2);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.palette-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-panel {
+  display: none;
+  margin: 0 18px 8px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  animation: clay-pop 0.3s ease;
+}
+
+.settings-panel.open { display: block; }
+
+.settings-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 481px) {
+  body { border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+}
+
+.generating .sleep-btn { background: var(--surface2); color: var(--text2); }
+</style>
+</head>
+<body>
+
+<div class="night-glow"></div>
+
+<header class="header">
+  <div class="header-left">
+    <span class="logo">DawnTask</span>
+    <span class="time-badge" id="timeBadge">night</span>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" id="themeToggle" title="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+    <button class="icon-btn" id="settingsBtn" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Storage warning banner -->
+<div class="info-banner" id="storageBanner" style="display:none">
+  <span class="info-banner-icon">&#9888;</span>
+  <div class="info-banner-text">
+    <strong>Your data is stored locally</strong> in this browser only. It may be lost if you clear cache or switch devices.<br>
+    <button class="banner-export-btn" id="bannerExportBtn">Export backup now</button>
+  </div>
+  <button class="info-banner-close" id="bannerClose">&times;</button>
+</div>
+
+<!-- Settings panel -->
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-section-title">Color theme</div>
+  <div class="palette-bar" style="margin:0;padding:10px 0;box-shadow:none">
+    <div class="palette-item">
+      <div class="palette-dot active" data-palette="neutral"></div>
+      <div class="palette-label">Neutral</div>
+    </div>
+    <div class="palette-item">
+      <div class="palette-dot" data-palette="warm"></div>
+      <div class="palette-label">Warm</div>
+    </div>
+    <div class="palette-item">
+      <div class="palette-dot" data-palette="cool"></div>
+      <div class="palette-label">Cool</div>
+    </div>
+  </div>
+</div>
+
+<!-- Backup reminder banner -->
+<div class="info-banner" id="backupReminder" style="display:none">
+  <span class="info-banner-icon">&#128190;</span>
+  <div class="info-banner-text">
+    You have <strong id="reminderPlanCount">0</strong> plans without backup. Export your data to avoid losing it.
+    <br><button class="banner-export-btn" id="reminderExportBtn">Export backup</button>
+  </div>
+  <button class="info-banner-close" id="reminderClose">&times;</button>
+</div>
+
+<div class="screens">
+  <!-- CAPTURE -->
+  <div class="screen active" id="screenCapture">
+    <h2 class="capture-greeting" id="captureGreeting">What's on your mind?</h2>
+    <p class="capture-sub" id="captureSub">Capture your thoughts before sleep</p>
+
+    <div class="model-picker">
+      <div class="model-picker-label">AI Model</div>
+      <button class="model-picker-btn" id="modelPickerBtn">
+        <span id="modelPickerLabel">Loading models...</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5l3 3 3-3"/></svg>
+      </button>
+      <div class="model-dropdown" id="modelDropdown">
+        <input class="model-search" id="modelSearch" placeholder="Search models..." autocomplete="off">
+        <div id="modelOptions"></div>
+      </div>
+    </div>
+
+    <div class="thought-input-wrap">
+      <textarea class="thought-input" id="thoughtInput" placeholder="I've been thinking about..." rows="4"></textarea>
+      <button class="voice-btn" id="voiceBtn" title="Voice input">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+      </button>
+    </div>
+
+    <button class="add-thought-btn" id="addThoughtBtn">+ Add this thought</button>
+
+    <div class="thoughts-list" id="thoughtsList"></div>
+
+    <button class="sleep-btn" id="sleepBtn" disabled>
+      Generate morning plan ✨
+    </button>
+  </div>
+
+  <!-- PLAN -->
+  <div class="screen" id="screenPlan">
+    <div id="planContent">
+      <div class="plan-empty" id="planEmpty">
+        <svg class="plan-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <h3>No plan yet</h3>
+        <p>Capture your thoughts tonight and your morning plan will appear here</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="screen" id="screenReview">
+    <h2 class="section-title">How was your day?</h2>
+
+    <div class="stats-grid" id="reviewStats">
+      <div class="stat-card">
+        <div class="stat-value" id="statCompleted">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Total tasks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statRate">0%</div>
+        <div class="stat-label">Completion</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statStreak">0</div>
+        <div class="stat-label">Day streak</div>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <div class="section-title" style="font-size:16px">How do you feel?</div>
+      <div class="mood-selector">
+        <button class="mood-btn" data-mood="1">😫</button>
+        <button class="mood-btn" data-mood="2">😕</button>
+        <button class="mood-btn" data-mood="3">😐</button>
+        <button class="mood-btn" data-mood="4">🙂</button>
+        <button class="mood-btn" data-mood="5">🤩</button>
+      </div>
+      <textarea class="review-notes" id="reviewNotes" placeholder="Any reflections on today?"></textarea>
+      <button class="save-review-btn" id="saveReviewBtn">Save review</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="screen" id="screenHistory">
+    <div class="calendar-header">
+      <span class="calendar-month" id="calendarMonth"></span>
+      <div class="calendar-nav">
+        <button id="calPrev"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L5 7l4 4"/></svg></button>
+        <button id="calNext"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg></button>
+      </div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+
+    <div class="streak-card">
+      <span class="streak-flame">🔥</span>
+      <div class="streak-info">
+        <h4 id="streakCount">0 days</h4>
+        <p>Current streak</p>
+      </div>
+    </div>
+
+    <div class="history-day-detail" id="historyDetail"></div>
+
+    <div class="data-actions">
+      <button class="data-btn" id="exportBtn">Export data</button>
+      <button class="data-btn" id="importBtn">Import data</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+  </div>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab active" data-tab="screenCapture">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+    <span class="tab-label">Capture</span>
+  </button>
+  <button class="tab" data-tab="screenPlan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
+    <span class="tab-label">Plan</span>
+  </button>
+  <button class="tab" data-tab="screenReview">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span class="tab-label">Review</span>
+  </button>
+  <button class="tab" data-tab="screenHistory">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span class="tab-label">History</span>
+  </button>
+</nav>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Crafting your morning plan...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+const DB_KEY = 'dawntask_data';
+const state = loadState();
+let selectedModel = '';
+let models = [];
+let calendarDate = new Date();
+let selectedMood = 0;
+let isNight = true;
+let manualTheme = null;
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(DB_KEY)) || defaultState();
+  } catch { return defaultState(); }
+}
+
+function defaultState() {
+  return { thoughts: {}, plans: {}, reviews: {}, settings: { model: '' } };
+}
+
+function saveState() {
+  localStorage.setItem(DB_KEY, JSON.stringify(state));
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function nowISO() {
+  return new Date().toISOString();
+}
+
+// ===== PALETTES =====
+const PALETTES = {
+  neutral: {
+    night: { bg:'#161622', surface:'#1e1e30', surface2:'#28283e', accent:'#a78bfa', accent2:'#60a5fa', glow:'rgba(167,139,250,0.18)', text:'#e8e6f0', text2:'#8b89a0', border:'rgba(167,139,250,0.1)', meta:'#161622' },
+    morning: { bg:'#f3f2ef', surface:'#fafaf8', surface2:'#edecea', accent:'#6366f1', accent2:'#f59e0b', glow:'rgba(99,102,241,0.12)', text:'#2d2d3a', text2:'#8888a0', border:'rgba(99,102,241,0.1)', meta:'#f3f2ef' }
+  },
+  warm: {
+    night: { bg:'#1a1025', surface:'#281e3e', surface2:'#332850', accent:'#f0abfc', accent2:'#fb923c', glow:'rgba(240,171,252,0.18)', text:'#fce7f3', text2:'#a78bbb', border:'rgba(240,171,252,0.1)', meta:'#1a1025' },
+    morning: { bg:'#fef3e8', surface:'#fff5ee', surface2:'#ffecd8', accent:'#ec4899', accent2:'#f97316', glow:'rgba(236,72,153,0.12)', text:'#3d2c2c', text2:'#a08080', border:'rgba(236,72,153,0.1)', meta:'#fef3e8' }
+  },
+  cool: {
+    night: { bg:'#0c1524', surface:'#132036', surface2:'#1a2d48', accent:'#38bdf8', accent2:'#34d399', glow:'rgba(56,189,248,0.18)', text:'#e0f2fe', text2:'#7da8c4', border:'rgba(56,189,248,0.1)', meta:'#0c1524' },
+    morning: { bg:'#f0f9ff', surface:'#f8fcff', surface2:'#e0f2fe', accent:'#0ea5e9', accent2:'#06b6d4', glow:'rgba(14,165,233,0.12)', text:'#1e3a4f', text2:'#6b9ab5', border:'rgba(14,165,233,0.1)', meta:'#f0f9ff' }
+  }
+};
+
+let currentPalette = localStorage.getItem('dawntask_palette') || 'neutral';
+
+function applyPalette(name) {
+  currentPalette = name;
+  localStorage.setItem('dawntask_palette', name);
+  const root = document.documentElement.style;
+  const p = PALETTES[name];
+
+  // Set night vars
+  const n = p.night;
+  root.setProperty('--n-bg', n.bg);
+  root.setProperty('--n-surface', n.surface);
+  root.setProperty('--n-surface2', n.surface2);
+  root.setProperty('--n-accent', n.accent);
+  root.setProperty('--n-accent2', n.accent2);
+  root.setProperty('--n-accent-glow', n.glow);
+  root.setProperty('--n-text', n.text);
+  root.setProperty('--n-text2', n.text2);
+  root.setProperty('--n-border', n.border);
+
+  // Set morning vars
+  const m = p.morning;
+  root.setProperty('--m-bg', m.bg);
+  root.setProperty('--m-surface', m.surface);
+  root.setProperty('--m-surface2', m.surface2);
+  root.setProperty('--m-accent', m.accent);
+  root.setProperty('--m-accent2', m.accent2);
+  root.setProperty('--m-accent-glow', m.glow);
+  root.setProperty('--m-text', m.text);
+  root.setProperty('--m-text2', m.text2);
+  root.setProperty('--m-border', m.border);
+
+  // Re-apply current theme
+  applyTheme(isNight);
+
+  // Update dots
+  document.querySelectorAll('.palette-dot').forEach(d => {
+    d.classList.toggle('active', d.dataset.palette === name);
+  });
+}
+
+document.querySelectorAll('.palette-item').forEach(item => {
+  item.onclick = () => {
+    const dot = item.querySelector('.palette-dot');
+    if (dot) applyPalette(dot.dataset.palette);
+  };
+  item.style.cursor = 'pointer';
+});
+
+// Settings toggle
+document.getElementById('settingsBtn').onclick = () => {
+  document.getElementById('settingsPanel').classList.toggle('open');
+};
+
+// ===== THEME =====
+function detectNight() {
+  const h = new Date().getHours();
+  return h >= 21 || h < 5;
+}
+
+function applyTheme(night) {
+  isNight = night;
+  const root = document.documentElement.style;
+  const props = ['bg','surface','surface2','accent','accent2','accent-glow','text','text2','border','shadow','shadow-inset','btn-shadow','btn-active'];
+  const prefix = night ? '--n-' : '--m-';
+  props.forEach(p => root.setProperty(`--${p}`, `var(${prefix}${p})`));
+
+  document.querySelector('.night-glow').style.opacity = night ? '1' : '0';
+  document.getElementById('timeBadge').textContent = night ? 'night' : 'morning';
+  const meta = PALETTES[currentPalette][night ? 'night' : 'morning'].meta;
+  document.querySelector('meta[name="theme-color"]').content = meta;
+
+  const greeting = document.getElementById('captureGreeting');
+  const sub = document.getElementById('captureSub');
+  if (night) {
+    greeting.textContent = "What's on your mind?";
+    sub.textContent = 'Capture your thoughts before sleep';
+  } else {
+    greeting.textContent = 'Good morning';
+    sub.textContent = 'Add thoughts for tonight\'s plan or check your current plan';
+  }
+}
+
+document.getElementById('themeToggle').onclick = () => {
+  if (manualTheme === null) manualTheme = !isNight;
+  else manualTheme = !manualTheme;
+  applyTheme(manualTheme);
+};
+
+// ===== TABS =====
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+
+    if (tab.dataset.tab === 'screenPlan') renderPlan();
+    if (tab.dataset.tab === 'screenReview') renderReview();
+    if (tab.dataset.tab === 'screenHistory') renderHistory();
+  };
+});
+
+// ===== MODELS =====
+async function loadModels() {
+  try {
+    const resp = await fetch('/api/config');
+    const data = await resp.json();
+    models = data.models || [];
+    selectedModel = state.settings.model || data.default_model || '';
+    updateModelLabel();
+  } catch {
+    document.getElementById('modelPickerLabel').textContent = 'Default model';
+  }
+}
+
+function updateModelLabel() {
+  const m = models.find(m => m.id === selectedModel);
+  document.getElementById('modelPickerLabel').textContent = m ? m.name : (selectedModel || 'Default model');
+}
+
+function renderModelOptions(query = '') {
+  const container = document.getElementById('modelOptions');
+  const q = query.toLowerCase();
+  const filtered = q ? models.filter(m => m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q)) : models;
+  container.innerHTML = filtered.map(m =>
+    `<div class="model-option ${m.id === selectedModel ? 'selected' : ''}" data-id="${m.id}">${m.name}</div>`
+  ).join('');
+
+  container.querySelectorAll('.model-option').forEach(opt => {
+    opt.onclick = () => {
+      selectedModel = opt.dataset.id;
+      state.settings.model = selectedModel;
+      saveState();
+      updateModelLabel();
+      document.getElementById('modelDropdown').classList.remove('open');
+    };
+  });
+}
+
+document.getElementById('modelPickerBtn').onclick = () => {
+  const dd = document.getElementById('modelDropdown');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    document.getElementById('modelSearch').value = '';
+    renderModelOptions();
+    document.getElementById('modelSearch').focus();
+  }
+};
+
+document.getElementById('modelSearch').oninput = (e) => renderModelOptions(e.target.value);
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.model-picker')) {
+    document.getElementById('modelDropdown').classList.remove('open');
+  }
+});
+
+// ===== VOICE =====
+let recognition = null;
+const voiceBtn = document.getElementById('voiceBtn');
+
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('thoughtInput').value = transcript;
+  };
+
+  recognition.onend = () => voiceBtn.classList.remove('recording');
+  recognition.onerror = () => voiceBtn.classList.remove('recording');
+
+  voiceBtn.onclick = () => {
+    if (voiceBtn.classList.contains('recording')) {
+      recognition.stop();
+    } else {
+      recognition.start();
+      voiceBtn.classList.add('recording');
+    }
+  };
+} else {
+  voiceBtn.style.display = 'none';
+}
+
+// ===== THOUGHTS =====
+function getTodayThoughts() {
+  return state.thoughts[today()] || [];
+}
+
+function renderThoughts() {
+  const list = document.getElementById('thoughtsList');
+  const thoughts = getTodayThoughts();
+  list.innerHTML = thoughts.map((t, i) => `
+    <div class="thought-card">
+      <div class="thought-time">${new Date(t.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+      <div>${escapeHtml(t.content)}</div>
+      <button class="thought-delete" data-idx="${i}">&times;</button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.thought-delete').forEach(btn => {
+    btn.onclick = () => {
+      thoughts.splice(parseInt(btn.dataset.idx), 1);
+      state.thoughts[today()] = thoughts;
+      saveState();
+      renderThoughts();
+    };
+  });
+
+  document.getElementById('sleepBtn').disabled = thoughts.length === 0;
+}
+
+document.getElementById('addThoughtBtn').onclick = () => {
+  const input = document.getElementById('thoughtInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (!state.thoughts[today()]) state.thoughts[today()] = [];
+  state.thoughts[today()].push({ content: text, created_at: nowISO() });
+  saveState();
+  input.value = '';
+  renderThoughts();
+};
+
+document.getElementById('thoughtInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById('addThoughtBtn').click();
+  }
+});
+
+// ===== GENERATE PLAN =====
+document.getElementById('sleepBtn').onclick = async () => {
+  const thoughts = getTodayThoughts();
+  if (thoughts.length === 0) return;
+
+  showLoading(true);
+  try {
+    const resp = await fetch('/api/generate-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        thoughts: thoughts.map(t => ({ content: t.content, created_at: t.created_at })),
+        model: selectedModel
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.detail || 'Failed to generate plan');
+    }
+
+    const plan = await resp.json();
+    plan.items = plan.items.map(item => ({ ...item, completed: false }));
+    state.plans[today()] = plan;
+    saveState();
+
+    showToast('Morning plan created! ✨', 'success');
+    document.querySelectorAll('.tab')[1].click();
+  } catch (e) {
+    showToast(e.message, 'error');
+  } finally {
+    showLoading(false);
+  }
+};
+
+// ===== RENDER PLAN =====
+function renderPlan() {
+  const container = document.getElementById('planContent');
+  const plan = state.plans[today()];
+
+  if (!plan) {
+    container.innerHTML = `
+      <div class="plan-empty">
+        <svg class="plan-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <h3>No plan yet</h3>
+        <p>Capture your thoughts tonight and your morning plan will appear here</p>
+      </div>`;
+    return;
+  }
+
+  const items = plan.items || [];
+  const completed = items.filter(i => i.completed).length;
+  const progress = items.length ? (completed / items.length * 100).toFixed(0) : 0;
+
+  let html = `
+    <div class="letter-card">
+      <div class="letter-label">Letter from yesterday you</div>
+      <div class="letter-text">${escapeHtml(plan.letter)}</div>
+    </div>
+    <div class="plan-progress">
+      <div class="plan-progress-header">
+        <span class="plan-progress-label">Today's progress</span>
+        <span class="plan-progress-pct">${completed}/${items.length}</span>
+      </div>
+      <div class="plan-progress-bar">
+        <div class="plan-progress-fill" style="width:${progress}%"></div>
+      </div>
+    </div>
+    <div class="plan-items">`;
+
+  items.forEach((item, i) => {
+    html += `
+      <div class="plan-item ${item.completed ? 'completed' : ''}" data-idx="${i}">
+        <div class="plan-item-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="plan-item-body">
+          <div class="plan-item-text">${escapeHtml(item.text)}</div>
+          <div class="plan-item-meta">
+            <span class="priority-dot ${item.priority}"></span>
+            <span>${item.priority}</span>
+            ${item.estimated_minutes ? `<span>· ${item.estimated_minutes}min</span>` : ''}
+            ${item.category ? `<span>· ${item.category}</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  html += '</div>';
+
+  if (plan.insights && plan.insights.length) {
+    html += `<div class="plan-insights"><div class="plan-insights-title">Insights</div><ul>`;
+    plan.insights.forEach(i => { html += `<li>${escapeHtml(i)}</li>`; });
+    html += '</ul></div>';
+  }
+
+  html += `<div class="plan-model-badge">Generated by ${escapeHtml(plan.model_used || 'AI')}</div>`;
+  container.innerHTML = html;
+
+  container.querySelectorAll('.plan-item').forEach(el => {
+    el.onclick = () => {
+      const idx = parseInt(el.dataset.idx);
+      plan.items[idx].completed = !plan.items[idx].completed;
+      saveState();
+      renderPlan();
+    };
+  });
+}
+
+// ===== REVIEW =====
+function renderReview() {
+  const plan = state.plans[today()];
+  const items = plan?.items || [];
+  const completed = items.filter(i => i.completed).length;
+  const streak = calcStreak();
+
+  document.getElementById('statCompleted').textContent = completed;
+  document.getElementById('statTotal').textContent = items.length;
+  document.getElementById('statRate').textContent = items.length ? Math.round(completed / items.length * 100) + '%' : '—';
+  document.getElementById('statStreak').textContent = streak;
+
+  const review = state.reviews[today()];
+  if (review) {
+    selectedMood = review.mood;
+    document.getElementById('reviewNotes').value = review.notes || '';
+  }
+
+  document.querySelectorAll('.mood-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.mood) === selectedMood);
+    btn.onclick = () => {
+      selectedMood = parseInt(btn.dataset.mood);
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+  });
+}
+
+document.getElementById('saveReviewBtn').onclick = () => {
+  state.reviews[today()] = {
+    mood: selectedMood,
+    notes: document.getElementById('reviewNotes').value.trim(),
+    created_at: nowISO()
+  };
+  saveState();
+  showToast('Review saved ✨', 'success');
+};
+
+function calcStreak() {
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const key = d.toISOString().split('T')[0];
+    if (state.plans[key]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+// ===== HISTORY =====
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function renderHistory() {
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+  document.getElementById('calendarMonth').textContent = `${MONTHS[month]} ${year}`;
+
+  const grid = document.getElementById('calendarGrid');
+  let html = DAYS.map(d => `<div class="calendar-day-label">${d}</div>`).join('');
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = today();
+
+  for (let i = 0; i < firstDay; i++) html += '<div class="calendar-day empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const plan = state.plans[dateStr];
+    const isToday = dateStr === todayStr;
+    let dotClass = '';
+    if (plan) {
+      const items = plan.items || [];
+      const done = items.filter(i => i.completed).length;
+      if (done === items.length && items.length > 0) dotClass = 'completed';
+      else if (done > 0) dotClass = 'partial';
+      else dotClass = 'has-plan';
+    }
+
+    html += `
+      <div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
+        ${d}
+        <div class="day-dot ${dotClass}"></div>
+      </div>`;
+  }
+
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.calendar-day:not(.empty)').forEach(el => {
+    el.onclick = () => showDayDetail(el.dataset.date);
+  });
+
+  document.getElementById('streakCount').textContent = calcStreak() + ' days';
+}
+
+document.getElementById('calPrev').onclick = () => { calendarDate.setMonth(calendarDate.getMonth() - 1); renderHistory(); };
+document.getElementById('calNext').onclick = () => { calendarDate.setMonth(calendarDate.getMonth() + 1); renderHistory(); };
+
+function showDayDetail(dateStr) {
+  const detail = document.getElementById('historyDetail');
+  const plan = state.plans[dateStr];
+  const review = state.reviews[dateStr];
+  const thoughts = state.thoughts[dateStr];
+
+  if (!plan && !review && !thoughts) {
+    detail.classList.remove('visible');
+    return;
+  }
+
+  let html = `<div style="font-weight:600;margin-bottom:8px">${dateStr}</div>`;
+
+  if (thoughts && thoughts.length) {
+    html += `<div style="font-size:12px;color:var(--text2);margin-bottom:4px">${thoughts.length} thoughts captured</div>`;
+  }
+
+  if (plan) {
+    const items = plan.items || [];
+    const done = items.filter(i => i.completed).length;
+    html += `<div style="font-size:13px;margin-bottom:4px">Plan: ${done}/${items.length} completed</div>`;
+  }
+
+  if (review) {
+    const moods = ['','😫','😕','😐','🙂','🤩'];
+    html += `<div style="font-size:13px">Mood: ${moods[review.mood] || '—'}</div>`;
+    if (review.notes) html += `<div style="font-size:12px;color:var(--text2);margin-top:4px">${escapeHtml(review.notes)}</div>`;
+  }
+
+  detail.innerHTML = html;
+  detail.classList.add('visible');
+}
+
+// ===== EXPORT / IMPORT =====
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dawntask-backup-${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Data exported', 'success');
+};
+
+document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (imported.thoughts || imported.plans || imported.reviews) {
+        Object.assign(state, imported);
+        saveState();
+        renderThoughts();
+        showToast('Data imported ✨', 'success');
+      } else {
+        showToast('Invalid backup file', 'error');
+      }
+    } catch { showToast('Failed to parse file', 'error'); }
+  };
+  reader.readAsText(file);
+};
+
+// ===== UTILS =====
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+function showLoading(show) {
+  document.getElementById('loading').classList.toggle('visible', show);
+}
+
+function showToast(msg, type = '') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast visible ' + type;
+  setTimeout(() => toast.classList.remove('visible'), 3000);
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+}
+
+// ===== BANNERS =====
+const BANNER_DISMISSED_KEY = 'dawntask_banner_dismissed';
+const LAST_EXPORT_KEY = 'dawntask_last_export';
+const BACKUP_REMIND_EVERY = 3;
+
+function showStorageBanner() {
+  if (localStorage.getItem(BANNER_DISMISSED_KEY)) return;
+  document.getElementById('storageBanner').style.display = 'flex';
+}
+
+function checkBackupReminder() {
+  const lastExport = localStorage.getItem(LAST_EXPORT_KEY) || '0';
+  const planCount = Object.keys(state.plans).length;
+  const exportedAt = parseInt(lastExport);
+  const plansAfterExport = planCount - exportedAt;
+  if (plansAfterExport >= BACKUP_REMIND_EVERY) {
+    document.getElementById('reminderPlanCount').textContent = plansAfterExport;
+    document.getElementById('backupReminder').style.display = 'flex';
+  }
+}
+
+function doExport() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dawntask-backup-${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  localStorage.setItem(LAST_EXPORT_KEY, String(Object.keys(state.plans).length));
+  document.getElementById('backupReminder').style.display = 'none';
+  showToast('Data exported ✨', 'success');
+}
+
+document.getElementById('bannerClose').onclick = () => {
+  document.getElementById('storageBanner').style.display = 'none';
+  localStorage.setItem(BANNER_DISMISSED_KEY, '1');
+};
+
+document.getElementById('reminderClose').onclick = () => {
+  document.getElementById('backupReminder').style.display = 'none';
+};
+
+document.getElementById('bannerExportBtn').onclick = doExport;
+document.getElementById('reminderExportBtn').onclick = doExport;
+
+document.getElementById('exportBtn').onclick = doExport;
+
+// ===== INIT =====
+applyPalette(currentPalette);
+applyTheme(manualTheme !== null ? manualTheme : detectNight());
+renderThoughts();
+loadModels();
+showStorageBanner();
+checkBackupReminder();
+</script>
+</body>
+</html>
