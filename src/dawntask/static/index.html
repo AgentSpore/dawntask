@@ -1037,7 +1037,7 @@ body {
 
 <!-- Settings panel -->
 <div class="settings-panel" id="settingsPanel">
-  <div class="settings-section-title">Color theme</div>
+  <div class="settings-section-title i18n-color-theme">Color theme</div>
   <div class="palette-bar" style="margin:0;padding:10px 0;box-shadow:none">
     <div class="palette-item">
       <div class="palette-dot active" data-palette="neutral"></div>
@@ -1103,15 +1103,15 @@ body {
     <div id="planContent">
       <div class="plan-empty" id="planEmpty">
         <svg class="plan-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <h3>No plan yet</h3>
-        <p>Capture your thoughts tonight and your morning plan will appear here</p>
+        <h3 class="i18n-no-plan">No plan yet</h3>
+        <p class="i18n-no-plan-desc">Capture your thoughts tonight and your morning plan will appear here</p>
       </div>
     </div>
   </div>
 
   <!-- REVIEW -->
   <div class="screen" id="screenReview">
-    <h2 class="section-title">How was your day?</h2>
+    <h2 class="section-title i18n-how-was-day">How was your day?</h2>
 
     <div class="stats-grid" id="reviewStats">
       <div class="stat-card">
@@ -1133,7 +1133,7 @@ body {
     </div>
 
     <div class="review-section">
-      <div class="section-title" style="font-size:16px">How do you feel?</div>
+      <div class="section-title i18n-how-feel" style="font-size:16px">How do you feel?</div>
       <div class="mood-selector">
         <button class="mood-btn" data-mood="1">😫</button>
         <button class="mood-btn" data-mood="2">😕</button>
@@ -1168,8 +1168,8 @@ body {
     <div class="history-day-detail" id="historyDetail"></div>
 
     <div class="data-actions">
-      <button class="data-btn" id="exportBtn">Export data</button>
-      <button class="data-btn" id="importBtn">Import data</button>
+      <button class="data-btn i18n-export" id="exportBtn">Export data</button>
+      <button class="data-btn i18n-import" id="importBtn">Import data</button>
     </div>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
@@ -1361,19 +1361,21 @@ function applyTheme(night) {
   props.forEach(p => root.setProperty(`--${p}`, `var(${prefix}${p})`));
 
   document.querySelector('.night-glow').style.opacity = night ? '1' : '0';
-  document.getElementById('timeBadge').textContent = night ? 'night' : 'morning';
+  document.getElementById('timeBadge').textContent = night ? t('night') : t('morning');
   const meta = PALETTES[currentPalette][night ? 'night' : 'morning'].meta;
   document.querySelector('meta[name="theme-color"]').content = meta;
 
   const greeting = document.getElementById('captureGreeting');
   const sub = document.getElementById('captureSub');
   if (night) {
-    greeting.textContent = "What's on your mind?";
-    sub.textContent = 'Capture your thoughts before sleep';
+    greeting.textContent = t('night_greeting');
+    sub.textContent = t('night_sub');
   } else {
-    greeting.textContent = 'Good morning';
-    sub.textContent = 'Add thoughts for tonight\'s plan or check your current plan';
+    greeting.textContent = t('morning_greeting');
+    sub.textContent = t('morning_sub');
   }
+
+  applyTranslations();
 }
 
 document.getElementById('themeToggle').onclick = () => {
@@ -1572,8 +1574,8 @@ function renderPlan() {
     container.innerHTML = `
       <div class="plan-empty">
         <svg class="plan-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <h3>No plan yet</h3>
-        <p>Capture your thoughts tonight and your morning plan will appear here</p>
+        <h3>${t('no_plan')}</h3>
+        <p>${t('no_plan_desc')}</p>
       </div>`;
     return;
   }
@@ -1584,7 +1586,7 @@ function renderPlan() {
 
   let html = `
     <div class="letter-card">
-      <div class="letter-label">Letter from yesterday you</div>
+      <div class="letter-label">${dtLang==='ru'?'Письмо от вчерашнего тебя':'Letter from yesterday you'}</div>
       <div class="letter-text">${escapeHtml(plan.letter)}</div>
     </div>
     <div class="plan-progress">
@@ -1874,32 +1876,68 @@ document.getElementById('exportBtn').onclick = doExport;
 // ===== i18n =====
 const T = {
   en: {
-    habits: 'Habits', garden: 'Garden', how_feeling: 'How are you feeling?',
+    // Tabs
+    capture: 'Capture', plan: 'Plan', review: 'Review', history: 'History',
+    habits: 'Habits', garden: 'Garden',
+    // Capture screen
+    night_greeting: "What's on your mind?", night_sub: 'Capture your thoughts before sleep',
+    morning_greeting: 'Good morning', morning_sub: "Add thoughts for tonight's plan or check your current plan",
+    thought_placeholder: "I've been thinking about...", add_thought: '+ Add this thought',
+    generate_plan: 'Generate morning plan ✨', ai_model: 'AI MODEL',
+    crafting: 'Crafting your morning plan...',
+    // Plan
+    no_plan: 'No plan yet', no_plan_desc: 'Capture your thoughts tonight and your morning plan will appear here',
+    // Review
+    how_was_day: 'How was your day?', how_feel: 'How do you feel?',
+    // Settings
+    settings: 'Settings', color_theme: 'Color theme', export_data: 'Export data', import_data: 'Import data',
+    storage_warning: 'All your data is stored locally in this browser. Export regularly to keep a backup.',
+    export_backup: 'Export backup now',
+    backup_warning_1: 'You have', backup_warning_2: 'plans without backup. Export your data to avoid losing it.',
+    export_backup_short: 'Export backup',
+    // Time
+    night: 'night', morning: 'morning',
+    // Habits
+    how_feeling: 'How are you feeling?',
     zombie: 'Zombie', okay: 'Okay', energized: 'Energized',
     new_habit: 'New Habit', save: 'Save', cancel: 'Cancel',
     no_habits: 'No habits yet. Tap + to add your first one.',
     gentle: 'Want to try something small today?',
     gentle_micro: 'Even a micro-step counts.',
     spin: 'Spin to decide', adhd: 'ADHD',
-    weekly_title: 'Weekly Reflection', generate_reflection: 'Generate Reflection',
     habit_name: 'Habit name', full_version: 'Full version (e.g. Run 3km)',
     micro_version: 'Micro version (e.g. Put on shoes)',
     done_today: 'Done!', micro_done: 'Micro ✓',
-    capture: 'Capture', plan: 'Plan', review: 'Review', history: 'History',
+    // Weekly
+    weekly_title: 'Weekly Reflection', generate_reflection: 'Generate Reflection',
   },
   ru: {
-    habits: 'Привычки', garden: 'Сад', how_feeling: 'Как ты себя чувствуешь?',
+    capture: 'Запись', plan: 'План', review: 'Обзор', history: 'Архив',
+    habits: 'Привычки', garden: 'Сад',
+    night_greeting: 'О чём думаешь?', night_sub: 'Запиши мысли перед сном',
+    morning_greeting: 'Доброе утро', morning_sub: 'Добавь мысли для плана на вечер или проверь текущий план',
+    thought_placeholder: 'Я думал(а) о...', add_thought: '+ Добавить мысль',
+    generate_plan: 'Создать утренний план ✨', ai_model: 'AI МОДЕЛЬ',
+    crafting: 'Создаём твой утренний план...',
+    no_plan: 'Плана пока нет', no_plan_desc: 'Запиши мысли вечером — утром здесь появится план',
+    how_was_day: 'Как прошёл день?', how_feel: 'Как ты себя чувствуешь?',
+    settings: 'Настройки', color_theme: 'Цветовая тема', export_data: 'Экспорт данных', import_data: 'Импорт данных',
+    storage_warning: 'Все данные хранятся локально в браузере. Регулярно экспортируйте для бэкапа.',
+    export_backup: 'Экспортировать сейчас',
+    backup_warning_1: 'У вас', backup_warning_2: 'планов без бэкапа. Экспортируйте данные.',
+    export_backup_short: 'Экспорт',
+    night: 'ночь', morning: 'утро',
+    how_feeling: 'Как ты себя чувствуешь?',
     zombie: 'Зомби', okay: 'Нормально', energized: 'Энергия',
     new_habit: 'Новая привычка', save: 'Сохранить', cancel: 'Отмена',
     no_habits: 'Привычек пока нет. Нажми + чтобы добавить.',
     gentle: 'Хочешь попробовать что-нибудь маленькое?',
     gentle_micro: 'Даже микро-шаг — это прогресс.',
     spin: 'Выбрать случайно', adhd: 'ADHD',
-    weekly_title: 'Недельная сводка', generate_reflection: 'Сгенерировать сводку',
     habit_name: 'Название привычки', full_version: 'Полная версия (напр. Бег 3км)',
     micro_version: 'Микро-версия (напр. Надеть кроссовки)',
     done_today: 'Готово!', micro_done: 'Микро ✓',
-    capture: 'Запись', plan: 'План', review: 'Обзор', history: 'Архив',
+    weekly_title: 'Недельная сводка', generate_reflection: 'Сгенерировать сводку',
   }
 };
 let dtLang = localStorage.getItem('dt_lang') || 'en';
@@ -1908,6 +1946,7 @@ function setDtLang(l) {
   dtLang = l; localStorage.setItem('dt_lang', l);
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
   updateTabLabels();
+  applyTranslations();
   renderHabits();
 }
 function updateTabLabels() {
@@ -1916,6 +1955,56 @@ function updateTabLabels() {
     const lbl = tab.querySelector('.tab-label');
     if (lbl && labels[tab.dataset.tab]) lbl.textContent = labels[tab.dataset.tab];
   });
+}
+
+function applyTranslations() {
+  // v1 static elements
+  document.querySelectorAll('.i18n-no-plan').forEach(el => el.textContent = t('no_plan'));
+  document.querySelectorAll('.i18n-no-plan-desc').forEach(el => el.textContent = t('no_plan_desc'));
+  document.querySelectorAll('.i18n-how-was-day').forEach(el => el.textContent = t('how_was_day'));
+  document.querySelectorAll('.i18n-how-feel').forEach(el => el.textContent = t('how_feel'));
+  document.querySelectorAll('.i18n-color-theme').forEach(el => el.textContent = t('color_theme'));
+  document.querySelectorAll('.i18n-export').forEach(el => el.textContent = t('export_data'));
+  document.querySelectorAll('.i18n-import').forEach(el => el.textContent = t('import_data'));
+
+  // Capture screen
+  const thoughtInput = document.getElementById('thoughtInput');
+  if (thoughtInput) thoughtInput.placeholder = t('thought_placeholder');
+  const addBtn = document.getElementById('addThoughtBtn');
+  if (addBtn) addBtn.textContent = t('add_thought');
+  const genBtn = document.querySelector('.generate-btn');
+  if (genBtn) genBtn.innerHTML = t('generate_plan');
+  const loadText = document.querySelector('.loading-text');
+  if (loadText) loadText.textContent = t('crafting');
+
+  // Re-apply theme greeting
+  const isNightNow = document.getElementById('timeBadge')?.textContent === t('night');
+  const greeting = document.getElementById('captureGreeting');
+  const sub = document.getElementById('captureSub');
+  if (greeting && sub) {
+    if (isNightNow || document.getElementById('timeBadge')?.textContent === 'night' || document.getElementById('timeBadge')?.textContent === 'ночь') {
+      greeting.textContent = t('night_greeting');
+      sub.textContent = t('night_sub');
+    } else {
+      greeting.textContent = t('morning_greeting');
+      sub.textContent = t('morning_sub');
+    }
+  }
+  // Time badge
+  const badge = document.getElementById('timeBadge');
+  if (badge) {
+    const night = document.documentElement.style.getPropertyValue('--bg') === 'var(--n-bg)' || badge.textContent === 'night' || badge.textContent === 'ночь';
+    badge.textContent = night ? t('night') : t('morning');
+  }
+
+  // Storage/backup banners
+  const storageBanner = document.getElementById('storageBanner');
+  if (storageBanner) {
+    const p = storageBanner.querySelector('p');
+    if (p) p.textContent = t('storage_warning');
+    const btn = document.getElementById('bannerExportBtn');
+    if (btn) btn.textContent = t('export_backup');
+  }
 }
 
 // ===== HABITS DATA =====
@@ -2271,8 +2360,10 @@ loadModels();
 showStorageBanner();
 checkBackupReminder();
 updateTabLabels();
+applyTranslations();
 todayEnergy = getTodayEnergy();
 document.getElementById('adhdToggle').classList.toggle('active', adhdMode);
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === dtLang));
 </script>
 </body>
 </html>
