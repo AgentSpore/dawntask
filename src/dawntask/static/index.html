@@ -73,6 +73,7 @@ html, body {
   color: var(--text);
   transition: background var(--transition), color var(--transition);
   overflow: hidden;
+  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
 }
@@ -80,8 +81,10 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
-  max-width: 480px;
+  max-width: min(480px, 100vw);
+  width: 100%;
   margin: 0 auto;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -103,23 +106,26 @@ body {
 
 /* ===== HEADER ===== */
 .header {
-  padding: 16px 20px 8px;
+  padding: 12px 16px 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   z-index: 10;
   position: relative;
+  gap: 6px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .logo {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.5px;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -127,26 +133,28 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   filter: drop-shadow(0 2px 4px var(--accent-glow));
+  white-space: nowrap;
 }
 
 .time-badge {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 20px;
   background: var(--surface);
   color: var(--accent);
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   box-shadow: var(--shadow);
+  flex-shrink: 0;
 }
 
-.header-actions { display: flex; gap: 8px; }
+.header-actions { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   border: none;
   background: var(--surface);
   color: var(--text2);
@@ -156,11 +164,22 @@ body {
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: var(--btn-shadow);
+  flex-shrink: 0;
 }
 
 .icon-btn:hover { color: var(--accent); transform: translateY(-2px); }
 .icon-btn:active { box-shadow: var(--btn-active); transform: translateY(1px); }
-.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn svg { width: 16px; height: 16px; }
+
+@media (max-width: 340px) {
+  .header { padding: 8px 8px 4px; gap: 3px; }
+  .logo { font-size: 17px; }
+  .time-badge { display: none; }
+  .icon-btn { width: 28px; height: 28px; border-radius: 9px; }
+  .icon-btn svg { width: 13px; height: 13px; }
+  .lang-btn { padding: 2px 5px; font-size: 9px; }
+  .header-actions { gap: 2px; }
+}
 
 /* ===== SCREENS ===== */
 .screens { flex: 1; position: relative; overflow: hidden; }
@@ -853,6 +872,134 @@ body {
 }
 
 .generating .sleep-btn { background: var(--surface2); color: var(--text2); }
+
+/* ===== FLOATING ACTION BUTTONS ===== */
+.habits-fab {
+  position: absolute;
+  bottom: 74px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 20;
+}
+.fab-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 13px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.fab-primary {
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 24px;
+  box-shadow: var(--btn-shadow), 0 4px 16px var(--accent-glow);
+}
+.fab-primary:active { transform: scale(0.9); }
+.fab-secondary {
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  box-shadow: var(--btn-shadow);
+}
+.fab-secondary.active {
+  color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent), var(--btn-shadow);
+}
+@media (max-width: 340px) {
+  .habits-fab { right: 10px; bottom: 68px; }
+  .fab-btn { width: 42px; height: 42px; border-radius: 14px; }
+  .fab-secondary { font-size: 9px; }
+}
+
+/* ===== ENERGY CHECK ===== */
+.energy-check { text-align: center; padding: 20px 0; }
+.energy-label { font-family: var(--font-display); font-size: 1.1em; margin-bottom: 16px; color: var(--text2); }
+.energy-btns { display: flex; gap: 12px; justify-content: center; }
+.energy-btn {
+  width: 90px; padding: 16px 8px; border: none; border-radius: var(--radius-sm);
+  background: var(--surface); box-shadow: var(--btn-shadow); color: var(--text);
+  font-family: var(--font-body); font-size: 24px; cursor: pointer;
+  transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.energy-btn span { font-size: 11px; font-weight: 700; }
+.energy-btn:active { box-shadow: var(--btn-active); transform: scale(0.96); }
+.energy-btn.selected { box-shadow: 0 0 0 2px var(--accent), var(--btn-shadow); }
+
+/* ===== HABIT CARDS ===== */
+.habit-card {
+  background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow);
+  padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;
+  transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden;
+}
+.habit-card.done { opacity: 0.6; }
+.habit-card.done::after {
+  content: '✓'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 24px; color: var(--accent); font-weight: 800;
+}
+.habit-emoji { font-size: 28px; flex-shrink: 0; }
+.habit-info { flex: 1; min-width: 0; }
+.habit-name { font-weight: 700; font-size: 15px; }
+.habit-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.habit-micro-tag { font-size: 10px; background: var(--accent-glow); color: var(--accent); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 4px; }
+.habit-delete { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--text2); font-size: 16px; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
+.habit-card:hover .habit-delete { opacity: 1; }
+
+/* ===== GENTLE NUDGE ===== */
+.gentle-nudge {
+  text-align: center; padding: 24px; margin-top: 16px; font-size: 14px;
+  color: var(--text2); font-style: italic; border-radius: var(--radius-sm);
+  background: var(--surface); box-shadow: var(--shadow-inset);
+}
+
+/* ===== HABIT MODAL ===== */
+.habit-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+}
+.habit-modal-content {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 24px; width: 100%; max-width: 360px;
+}
+.habit-modal-content h3 { font-family: var(--font-display); margin-bottom: 16px; }
+.clay-input {
+  width: 100%; padding: 12px 16px; border: none; border-radius: var(--radius-xs);
+  background: var(--bg); box-shadow: var(--shadow-inset); color: var(--text);
+  font-family: var(--font-body); font-size: 14px; margin-bottom: 10px; outline: none;
+}
+.clay-btn { padding: 10px 20px; border: none; border-radius: var(--radius-xs); background: var(--surface2); box-shadow: var(--btn-shadow); color: var(--text); font-family: var(--font-body); font-weight: 700; cursor: pointer; }
+.clay-btn.accent { background: var(--accent); color: var(--bg); }
+.clay-btn-sm { padding: 6px 14px; border: none; border-radius: var(--radius-xs); background: var(--surface2); box-shadow: var(--btn-shadow); color: var(--text2); font-family: var(--font-body); font-weight: 700; font-size: 11px; cursor: pointer; letter-spacing: 0.5px; }
+.clay-btn-sm.active { color: var(--accent); box-shadow: 0 0 0 2px var(--accent), var(--btn-shadow); }
+
+/* ===== SPIN ===== */
+.spin-btn { font-size: 16px; animation: none; }
+.spin-btn.spinning { animation: wiggle 0.15s infinite; }
+@keyframes wiggle { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+
+/* ===== CONFETTI ===== */
+.confetti-piece {
+  position: fixed; width: 8px; height: 8px; border-radius: 2px; z-index: 999;
+  animation: confetti-fall 1.5s ease-out forwards; pointer-events: none;
+}
+@keyframes confetti-fall {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translateY(400px) rotate(720deg) scale(0.3); }
+}
+
+/* ===== LANG TOGGLE ===== */
+.lang-toggle { display: flex; gap: 2px; flex-shrink: 0; }
+.lang-btn { padding: 3px 7px; border: none; border-radius: 8px; background: var(--surface2); color: var(--text2); font-size: 10px; font-weight: 700; cursor: pointer; font-family: var(--font-body); line-height: 1; }
+.lang-btn.active { color: var(--accent); background: var(--accent-glow); }
 </style>
 </head>
 <body>
@@ -865,6 +1012,10 @@ body {
     <span class="time-badge" id="timeBadge">night</span>
   </div>
   <div class="header-actions">
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en" onclick="setDtLang('en')">EN</button>
+      <button class="lang-btn" data-lang="ru" onclick="setDtLang('ru')">RU</button>
+    </div>
     <button class="icon-btn" id="themeToggle" title="Toggle theme">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
     </button>
@@ -1024,6 +1175,41 @@ body {
   </div>
 </div>
 
+  <!-- ===== HABITS SCREEN ===== -->
+  <div class="screen" id="screenHabits" style="padding-top:62px">
+    <!-- Floating action buttons -->
+    <div class="habits-fab">
+      <button class="fab-btn fab-secondary" id="adhdToggle" onclick="toggleADHD()">ADHD</button>
+      <button class="fab-btn fab-primary" onclick="showAddHabit()">+</button>
+    </div>
+
+    <!-- Energy check (rebuilt by JS with i18n) -->
+    <div id="energyCheck" class="energy-check" style="display:none"></div>
+
+    <!-- Habits list -->
+    <div id="habitsList"></div>
+
+    <!-- Gentle nudge -->
+    <div id="gentleNudge" class="gentle-nudge" style="display:none"></div>
+
+    <!-- Add habit modal (rebuilt by JS with i18n) -->
+    <div id="addHabitModal" class="habit-modal" style="display:none"></div>
+
+    <!-- Spin to decide (ADHD) -->
+    <div id="spinDecide" style="display:none;text-align:center;margin-top:20px">
+      <button class="clay-btn accent spin-btn" id="spinBtn" onclick="spinToDecide()">🎲 Spin to decide</button>
+      <div id="spinResult" style="margin-top:12px;font-size:1.2em"></div>
+    </div>
+  </div>
+
+  <!-- ===== GARDEN SCREEN ===== -->
+  <div class="screen" id="screenGarden" style="padding-top:62px">
+    <canvas id="gardenCanvas" width="400" height="500" style="width:100%;border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)"></canvas>
+    <div id="gardenLegend" style="margin-top:12px;font-size:12px;color:var(--text2);text-align:center"></div>
+  </div>
+
+</div>
+
 <nav class="tab-bar">
   <button class="tab active" data-tab="screenCapture">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
@@ -1036,6 +1222,14 @@ body {
   <button class="tab" data-tab="screenReview">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
     <span class="tab-label">Review</span>
+  </button>
+  <button class="tab" data-tab="screenHabits">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span class="tab-label">Habits</span>
+  </button>
+  <button class="tab" data-tab="screenGarden">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22c-4 0-8-2-8-6 0-3 2-5 4-6 1-2 3-4 4-4s3 2 4 4c2 1 4 3 4 6 0 4-4 6-8 6z"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+    <span class="tab-label">Garden</span>
   </button>
   <button class="tab" data-tab="screenHistory">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1677,6 +1871,398 @@ document.getElementById('reminderExportBtn').onclick = doExport;
 
 document.getElementById('exportBtn').onclick = doExport;
 
+// ===== i18n =====
+const T = {
+  en: {
+    habits: 'Habits', garden: 'Garden', how_feeling: 'How are you feeling?',
+    zombie: 'Zombie', okay: 'Okay', energized: 'Energized',
+    new_habit: 'New Habit', save: 'Save', cancel: 'Cancel',
+    no_habits: 'No habits yet. Tap + to add your first one.',
+    gentle: 'Want to try something small today?',
+    gentle_micro: 'Even a micro-step counts.',
+    spin: 'Spin to decide', adhd: 'ADHD',
+    weekly_title: 'Weekly Reflection', generate_reflection: 'Generate Reflection',
+    habit_name: 'Habit name', full_version: 'Full version (e.g. Run 3km)',
+    micro_version: 'Micro version (e.g. Put on shoes)',
+    done_today: 'Done!', micro_done: 'Micro ✓',
+    capture: 'Capture', plan: 'Plan', review: 'Review', history: 'History',
+  },
+  ru: {
+    habits: 'Привычки', garden: 'Сад', how_feeling: 'Как ты себя чувствуешь?',
+    zombie: 'Зомби', okay: 'Нормально', energized: 'Энергия',
+    new_habit: 'Новая привычка', save: 'Сохранить', cancel: 'Отмена',
+    no_habits: 'Привычек пока нет. Нажми + чтобы добавить.',
+    gentle: 'Хочешь попробовать что-нибудь маленькое?',
+    gentle_micro: 'Даже микро-шаг — это прогресс.',
+    spin: 'Выбрать случайно', adhd: 'ADHD',
+    weekly_title: 'Недельная сводка', generate_reflection: 'Сгенерировать сводку',
+    habit_name: 'Название привычки', full_version: 'Полная версия (напр. Бег 3км)',
+    micro_version: 'Микро-версия (напр. Надеть кроссовки)',
+    done_today: 'Готово!', micro_done: 'Микро ✓',
+    capture: 'Запись', plan: 'План', review: 'Обзор', history: 'Архив',
+  }
+};
+let dtLang = localStorage.getItem('dt_lang') || 'en';
+function t(k) { return T[dtLang]?.[k] || T.en[k] || k; }
+function setDtLang(l) {
+  dtLang = l; localStorage.setItem('dt_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  updateTabLabels();
+  renderHabits();
+}
+function updateTabLabels() {
+  const labels = {screenCapture:t('capture'),screenPlan:t('plan'),screenReview:t('review'),screenHistory:t('history'),screenHabits:t('habits'),screenGarden:t('garden')};
+  document.querySelectorAll('.tab').forEach(tab => {
+    const lbl = tab.querySelector('.tab-label');
+    if (lbl && labels[tab.dataset.tab]) lbl.textContent = labels[tab.dataset.tab];
+  });
+}
+
+// ===== HABITS DATA =====
+function getHabits() { return JSON.parse(localStorage.getItem('dt_habits') || '[]'); }
+function saveHabits(h) { localStorage.setItem('dt_habits', JSON.stringify(h)); }
+function getCheckins() { return JSON.parse(localStorage.getItem('dt_checkins') || '[]'); }
+function saveCheckins(c) { localStorage.setItem('dt_checkins', JSON.stringify(c)); }
+function getEnergyLog() { return JSON.parse(localStorage.getItem('dt_energy') || '[]'); }
+function saveEnergyLog(e) { localStorage.setItem('dt_energy', JSON.stringify(e)); }
+function getGardenData() { return JSON.parse(localStorage.getItem('dt_garden') || '{"plants":{}}'); }
+function saveGardenData(g) { localStorage.setItem('dt_garden', JSON.stringify(g)); }
+
+let adhdMode = localStorage.getItem('dt_adhd') === 'true';
+let todayEnergy = '';
+
+function getTodayEnergy() {
+  const log = getEnergyLog();
+  const td = today();
+  const entry = log.find(e => e.date === td);
+  return entry ? entry.level : '';
+}
+
+// ===== ENERGY CHECK =====
+function setEnergy(level) {
+  todayEnergy = level;
+  const log = getEnergyLog().filter(e => e.date !== today());
+  log.push({ date: today(), level });
+  saveEnergyLog(log);
+  setTimeout(renderHabits, 300);
+}
+
+function showEnergyCheck() {
+  const el = document.getElementById('energyCheck');
+  todayEnergy = getTodayEnergy();
+  if (!todayEnergy) {
+    el.style.display = '';
+    el.innerHTML = `
+      <p class="energy-label">${t('how_feeling')}</p>
+      <div class="energy-btns">
+        <button class="energy-btn" onclick="setEnergy('zombie')">🧟<br><span>${t('zombie')}</span></button>
+        <button class="energy-btn" onclick="setEnergy('okay')">😐<br><span>${t('okay')}</span></button>
+        <button class="energy-btn" onclick="setEnergy('energized')">⚡<br><span>${t('energized')}</span></button>
+      </div>`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ===== HABITS SCREEN =====
+function renderHabits() {
+  showEnergyCheck();
+  const habits = getHabits();
+  const checkins = getCheckins();
+  const td = today();
+  const list = document.getElementById('habitsList');
+  const nudge = document.getElementById('gentleNudge');
+
+  if (!habits.length) {
+    list.innerHTML = `<div class="gentle-nudge">${t('no_habits')}</div>`;
+    nudge.style.display = 'none';
+    return;
+  }
+
+  // Filter by energy if set
+  let visible = habits;
+  const energyOrder = { zombie: 0, okay: 1, energized: 2 };
+  if (todayEnergy) {
+    const userLevel = energyOrder[todayEnergy] ?? 1;
+    visible = habits.filter(h => energyOrder[h.min_energy || 'zombie'] <= userLevel);
+  }
+
+  // ADHD mode: max 3
+  if (adhdMode && visible.length > 3) {
+    visible = visible.slice(0, 3);
+    document.getElementById('spinDecide').style.display = '';
+    document.getElementById('spinBtn').textContent = '🎲 ' + t('spin');
+  } else {
+    document.getElementById('spinDecide').style.display = 'none';
+  }
+
+  const todayCheckins = checkins.filter(c => c.date === td);
+  const doneIds = new Set(todayCheckins.filter(c => c.done).map(c => c.habit_id));
+  const allDone = visible.length > 0 && visible.every(h => doneIds.has(h.id));
+
+  list.innerHTML = visible.map(h => {
+    const done = doneIds.has(h.id);
+    const isMicro = todayEnergy === 'zombie';
+    const desc = isMicro ? h.micro : h.full;
+    return `<div class="habit-card${done ? ' done' : ''}" onclick="toggleHabit('${h.id}', ${isMicro})">
+      <span class="habit-emoji">${h.emoji || '✨'}</span>
+      <div class="habit-info">
+        <div class="habit-name">${escapeHtml(h.name)}</div>
+        <div class="habit-desc">${escapeHtml(desc || '')}</div>
+        ${isMicro && !done ? `<span class="habit-micro-tag">${dtLang==='ru'?'микро':'micro'}</span>` : ''}
+      </div>
+      <button class="habit-delete" onclick="event.stopPropagation();deleteHabit('${h.id}')">×</button>
+    </div>`;
+  }).join('');
+
+  // Nudge
+  const undone = visible.filter(h => !doneIds.has(h.id));
+  if (undone.length > 0 && undone.length < visible.length) {
+    nudge.style.display = '';
+    nudge.textContent = todayEnergy === 'zombie' ? t('gentle_micro') : t('gentle');
+  } else {
+    nudge.style.display = 'none';
+  }
+
+  updateGarden();
+}
+
+function toggleHabit(id, micro) {
+  const checkins = getCheckins();
+  const td = today();
+  const existing = checkins.findIndex(c => c.date === td && c.habit_id === id);
+  if (existing >= 0) {
+    checkins.splice(existing, 1);
+  } else {
+    checkins.push({ date: td, habit_id: id, done: true, micro });
+    spawnConfetti();
+  }
+  saveCheckins(checkins);
+  renderHabits();
+}
+
+function deleteHabit(id) {
+  const habits = getHabits().filter(h => h.id !== id);
+  saveHabits(habits);
+  renderHabits();
+}
+
+function toggleADHD() {
+  adhdMode = !adhdMode;
+  localStorage.setItem('dt_adhd', adhdMode);
+  document.getElementById('adhdToggle').classList.toggle('active', adhdMode);
+  renderHabits();
+}
+
+function spinToDecide() {
+  const habits = getHabits();
+  const checkins = getCheckins().filter(c => c.date === today());
+  const doneIds = new Set(checkins.filter(c => c.done).map(c => c.habit_id));
+  const undone = habits.filter(h => !doneIds.has(h.id));
+  if (!undone.length) return;
+
+  const btn = document.querySelector('.spin-btn');
+  btn.classList.add('spinning');
+  const result = document.getElementById('spinResult');
+
+  let count = 0;
+  const interval = setInterval(() => {
+    const random = undone[Math.floor(Math.random() * undone.length)];
+    result.textContent = `${random.emoji} ${random.name}`;
+    count++;
+    if (count > 15) {
+      clearInterval(interval);
+      btn.classList.remove('spinning');
+      const chosen = undone[Math.floor(Math.random() * undone.length)];
+      result.innerHTML = `<strong>${chosen.emoji} ${chosen.name}</strong><br><span style="font-size:0.7em;color:var(--text2)">${todayEnergy === 'zombie' ? chosen.micro : chosen.full}</span>`;
+    }
+  }, 80);
+}
+
+// ===== ADD HABIT =====
+function showAddHabit() {
+  const modal = document.getElementById('addHabitModal');
+  modal.style.display = '';
+  modal.innerHTML = `<div class="habit-modal-content">
+    <h3>${t('new_habit')}</h3>
+    <input id="habitName" placeholder="${t('habit_name')}" class="clay-input">
+    <input id="habitFull" placeholder="${t('full_version')}" class="clay-input">
+    <input id="habitMicro" placeholder="${t('micro_version')}" class="clay-input">
+    <select id="habitEmoji" class="clay-input">
+      <option value="🏃">🏃</option><option value="📖">📖</option><option value="🧘">🧘</option>
+      <option value="💻">💻</option><option value="🎨">🎨</option><option value="💤">💤</option>
+      <option value="🥗">🥗</option><option value="👥">👥</option><option value="📝">📝</option><option value="🌿">🌿</option>
+    </select>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="clay-btn" onclick="closeAddHabit()">${t('cancel')}</button>
+      <button class="clay-btn accent" onclick="saveHabit()">${t('save')}</button>
+    </div>
+  </div>`;
+  document.getElementById('habitName').focus();
+}
+function closeAddHabit() { document.getElementById('addHabitModal').style.display = 'none'; }
+function saveHabit() {
+  const name = document.getElementById('habitName').value.trim();
+  if (!name) return;
+  const habits = getHabits();
+  habits.push({
+    id: 'h' + Date.now(),
+    name,
+    full: document.getElementById('habitFull').value.trim(),
+    micro: document.getElementById('habitMicro').value.trim(),
+    emoji: document.getElementById('habitEmoji').value,
+    category: '',
+    min_energy: 'zombie',
+    created: today(),
+  });
+  saveHabits(habits);
+  closeAddHabit();
+  renderHabits();
+}
+
+// ===== CONFETTI =====
+function spawnConfetti() {
+  const colors = ['#a78bfa', '#60a5fa', '#f59e0b', '#34d399', '#f472b6', '#fbbf24'];
+  for (let i = 0; i < 25; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.top = (Math.random() * 30 + 20) + '%';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.animationDelay = Math.random() * 0.5 + 's';
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+}
+
+// ===== GROWTH GARDEN =====
+function updateGarden() {
+  const canvas = document.getElementById('gardenCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const habits = getHabits();
+  const checkins = getCheckins();
+
+  // Count total check-ins per habit
+  const counts = {};
+  habits.forEach(h => counts[h.id] = 0);
+  checkins.forEach(c => { if (c.done && counts[c.habit_id] !== undefined) counts[c.habit_id]++; });
+
+  // Background
+  const month = new Date().getMonth();
+  const season = month < 3 ? 'winter' : month < 6 ? 'spring' : month < 9 ? 'summer' : 'autumn';
+  const bgColors = { winter:'#1a1a2e', spring:'#1a2a1a', summer:'#1a2520', autumn:'#2a1a10' };
+  const groundColors = { winter:'#2a2a3e', spring:'#2a3a20', summer:'#2a3a28', autumn:'#3a2a18' };
+  ctx.fillStyle = bgColors[season]; ctx.fillRect(0, 0, W, H);
+  // Ground
+  ctx.fillStyle = groundColors[season];
+  ctx.beginPath(); ctx.moveTo(0, H*0.7); ctx.quadraticCurveTo(W/2, H*0.65, W, H*0.7); ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.fill();
+
+  if (!habits.length) {
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '14px Nunito'; ctx.textAlign = 'center';
+    ctx.fillText(dtLang==='ru'?'Добавь привычки чтобы вырастить сад':'Add habits to grow your garden', W/2, H/2);
+    return;
+  }
+
+  // Draw plants
+  const spacing = W / (habits.length + 1);
+  habits.forEach((h, i) => {
+    const x = spacing * (i + 1);
+    const y = H * 0.68;
+    const growth = Math.min(counts[h.id] || 0, 30);
+    drawPlant(ctx, x, y, growth, h.emoji);
+  });
+
+  // Legend
+  const legend = document.getElementById('gardenLegend');
+  if (legend) {
+    legend.innerHTML = habits.map(h => `${h.emoji} ${h.name}: ${counts[h.id]||0}`).join(' · ');
+  }
+}
+
+function drawPlant(ctx, x, y, growth, emoji) {
+  // Stem
+  const stemH = 10 + growth * 5;
+  ctx.strokeStyle = '#4a8';
+  ctx.lineWidth = 2 + growth * 0.2;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - stemH); ctx.stroke();
+
+  // Leaves
+  if (growth >= 3) {
+    ctx.fillStyle = '#5b5';
+    for (let j = 0; j < Math.min(growth / 3, 4); j++) {
+      const ly = y - stemH * (0.3 + j * 0.2);
+      const dir = j % 2 === 0 ? 1 : -1;
+      ctx.beginPath();
+      ctx.ellipse(x + dir * 12, ly, 10, 5, dir * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Flower/emoji at top
+  if (growth >= 1) {
+    ctx.font = `${16 + Math.min(growth, 20)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(emoji, x, y - stemH - 8);
+  }
+
+  // Soil dot
+  ctx.fillStyle = '#654';
+  ctx.beginPath(); ctx.arc(x, y + 4, 6, 0, Math.PI * 2); ctx.fill();
+}
+
+// ===== WEEKLY REFLECTION =====
+async function generateWeeklyReflection() {
+  const habits = getHabits();
+  const checkins = getCheckins();
+  const energy = getEnergyLog();
+
+  // Last 7 days
+  const now = new Date();
+  const weekAgo = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
+  const recentCheckins = checkins.filter(c => c.date >= weekAgo);
+  const recentEnergy = energy.filter(e => e.date >= weekAgo);
+
+  showLoading(true);
+  try {
+    const resp = await fetch('/api/weekly-reflection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ habits, checkins: recentCheckins, energy: recentEnergy, lang: dtLang }),
+    });
+    const data = await resp.json();
+    if (data.reflection) {
+      const reflections = JSON.parse(localStorage.getItem('dt_reflections') || '[]');
+      reflections.unshift({ week: today(), text: data.reflection, patterns: data.patterns, suggestions: data.suggestions, generated: nowISO() });
+      localStorage.setItem('dt_reflections', JSON.stringify(reflections));
+      showToast(dtLang === 'ru' ? 'Сводка готова!' : 'Reflection ready!');
+    } else if (data.detail) {
+      showToast(data.detail, 'error');
+    }
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+  showLoading(false);
+}
+
+// ===== TABS UPDATE =====
+const origTabHandler = document.querySelectorAll('.tab');
+origTabHandler.forEach(tab => {
+  const origClick = tab.onclick;
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t2 => t2.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'screenPlan') renderPlan();
+    if (tab.dataset.tab === 'screenReview') renderReview();
+    if (tab.dataset.tab === 'screenHistory') renderHistory();
+    if (tab.dataset.tab === 'screenHabits') renderHabits();
+    if (tab.dataset.tab === 'screenGarden') updateGarden();
+  };
+});
+
 // ===== INIT =====
 applyPalette(currentPalette);
 applyTheme(manualTheme !== null ? manualTheme : detectNight());
@@ -1684,6 +2270,9 @@ renderThoughts();
 loadModels();
 showStorageBanner();
 checkBackupReminder();
+updateTabLabels();
+todayEnergy = getTodayEnergy();
+document.getElementById('adhdToggle').classList.toggle('active', adhdMode);
 </script>
 </body>
 </html>

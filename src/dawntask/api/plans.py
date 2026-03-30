@@ -59,7 +59,7 @@ async def get_config():
 async def create_plan(req: GeneratePlanRequest):
     thoughts = [{"content": t.content, "created_at": t.created_at} for t in req.thoughts]
     try:
-        result = await generate_plan(thoughts, req.model)
+        result = await generate_plan(thoughts, req.model, req.energy)
     except PlanError as e:
         raise HTTPException(502, str(e))
     return PlanResponse(

@@ -44,7 +44,7 @@ class PlanError(Exception):
     pass
 
 
-async def generate_plan(thoughts: list[dict], model: str = "") -> dict:
+async def generate_plan(thoughts: list[dict], model: str = "", energy: str = "") -> dict:
     used_model = model or settings.llm_model
 
     if not settings.openrouter_api_key:
@@ -54,7 +54,15 @@ async def generate_plan(thoughts: list[dict], model: str = "") -> dict:
         f"[{t.get('created_at', 'night')}] {t['content']}" for t in thoughts
     )
 
-    user_prompt = f"Here are my thoughts from last night:\n\n{thoughts_text}\n\nCreate my morning action plan."
+    energy_note = ""
+    if energy == "zombie":
+        energy_note = "\n\nIMPORTANT: The user feels very low energy today (zombie mode). Only include the most essential 1-3 items. Suggest micro-versions of tasks. Be extra gentle."
+    elif energy == "okay":
+        energy_note = "\n\nThe user feels okay today. Normal energy. Include moderate number of items."
+    elif energy == "energized":
+        energy_note = "\n\nThe user feels energized today! Include all relevant items, maybe even suggest bonus challenges."
+
+    user_prompt = f"Here are my thoughts from last night:\n\n{thoughts_text}{energy_note}\n\nCreate my morning action plan."
 
     async with httpx.AsyncClient(timeout=60) as client:
         try:

@@ -10,6 +10,7 @@ class GeneratePlanRequest(BaseModel):
     thoughts: list[ThoughtItem] = Field(..., min_length=1, max_length=50)
     model: str = ""  # optional model override
     language: str = ""  # auto-detect if empty
+    energy: str = ""  # zombie | okay | energized
 
 
 class PlanItem(BaseModel):
